@@ -1,53 +1,25 @@
-package me.dexrn.UUID2Name;
+package me.dexrn.uuid2name;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import javax.swing.JTextArea;
-import org.apache.http.HttpException;
-import org.apache.http.HttpStatus;
-import java.io.*;
-import java.net.URISyntaxException;
-import java.util.*;
-
-
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.*;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
+import java.net.URL;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.*;
 import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.UUID;
-import org.apache.http.client.HttpResponseException;
 
 import javax.swing.BorderFactory;
+import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -56,12 +28,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
+import org.apache.commons.io.IOUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import org.apache.commons.io.IOUtils;
 
 
 
@@ -134,7 +104,7 @@ public class UUID2Name extends JFrame implements ActionListener {
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
             String name = jsonObject.get("name").getAsString();
             counter++;
-            System.out.println("Loop " + counter + " completed.");
+            System.out.println("UUID " + uuid + " completed.");
             return name;
         } catch (IOException e) {
             System.err.println("WARN: Error getting name for UUID " + uuid + ": " + e.getMessage());
@@ -151,11 +121,13 @@ public class UUID2Name extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent event) {
+        String jarPath = UUID2Name.class.getProtectionDomain().getCodeSource().getLocation().getPath();
         if (event.getSource() == chooseFolderButton) {
             int result = fileChooser.showOpenDialog(this);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFolder = fileChooser.getSelectedFile();
                 folderPathField.setText(selectedFolder.getAbsolutePath());
+
             }
         } else if (event.getSource() == convertButton) {
             String folderPath = folderPathField.getText();
@@ -167,7 +139,7 @@ public class UUID2Name extends JFrame implements ActionListener {
 
             // Start conversion process in a separate thread
             new Thread(() -> {
-            	System.out.println("Started.");
+                System.out.println("Started.");
                 // get list of file names in folder
                 statusLabel.setText("Getting all filenames in folder...");
                 System.out.println("Getting all filenames in folder...");
@@ -195,38 +167,35 @@ public class UUID2Name extends JFrame implements ActionListener {
                     try {
                         String name = getName(uuid);
                         if (name == null) {
-                            continue;
+                            name = "null";
                         }
                         names.add(name);
                     } catch (Exception e) {
-                        System.err.println("WARN: Error getting name for UUID " + uuid + ": " + e.getMessage());
+                        System.err.println("ERROR: Error getting name for UUID " + uuid + ": " + e.getMessage());
+                        names.add("error");
                     }
                 }
 
-
-                // save names to file
-                statusLabel.setText("Saving names to file...");
-                System.out.println("Saving names to file...");
-                String outputPath = folderPath + "/names.txt";
-                File outputFile = new File(outputPath);
+                // write links to file
+                statusLabel.setText("Writing links to file...");
+                System.out.println("Writing links to file...");
                 try {
-                    FileWriter writer = new FileWriter(outputFile);
-                    for (String name : names) {
-                    	System.out.println(name + "\n");
-                        writer.write(name + "\n");
+                    FileWriter writer = new FileWriter(new File(jarPath.substring(0, jarPath.lastIndexOf("/") + 1) + "links.txt"));
+                    for (int i = 0; i < uuids.size(); i++) {
+                        writer.write(uuids.get(i) + "=" + names.get(i)  + "\n");
                     }
                     writer.close();
                 } catch (IOException e) {
-                    statusLabel.setText("Error saving names to file: " + e.getMessage());
-                    System.out.println("ERROR: Error saving names to file: " + e.getMessage());
-                    return;
+                    System.err.println("ERROR: Failed to write links to file: " + e.getMessage());
                 }
 
-                statusLabel.setText("Complete! Names saved to " + outputPath);
-                System.out.println("Complete! Names saved to " + outputPath);
+                // done
+                statusLabel.setText("Done. Converted " + counter + " UUIDs to names.");
+                System.out.println("Done. Converted " + counter + " UUIDs to names.");
             }).start();
         }
     }
+
     
 
 

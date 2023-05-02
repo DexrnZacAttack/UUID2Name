@@ -1,4 +1,4 @@
-package me.dexrn.UUID2Name;
+package me.dexrn.uuid2name;
 
 
 import java.awt.BorderLayout;
