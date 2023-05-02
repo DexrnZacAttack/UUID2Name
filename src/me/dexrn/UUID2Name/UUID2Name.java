@@ -176,17 +176,17 @@ public class UUID2Name extends JFrame implements ActionListener {
                     }
                 }
 
-                // write links to file
-                statusLabel.setText("Writing links to file...");
-                System.out.println("Writing links to file...");
+                // write names to file
+                statusLabel.setText("Writing names to file...");
+                System.out.println("Writing names to file...");
                 try {
-                    FileWriter writer = new FileWriter(new File(jarPath.substring(0, jarPath.lastIndexOf("/") + 1) + "links.txt"));
+                    FileWriter writer = new FileWriter(new File(jarPath.substring(0, jarPath.lastIndexOf("/") + 1) + "names.txt"));
                     for (int i = 0; i < uuids.size(); i++) {
                         writer.write(uuids.get(i) + "=" + names.get(i)  + "\n");
                     }
                     writer.close();
                 } catch (IOException e) {
-                    System.err.println("ERROR: Failed to write links to file: " + e.getMessage());
+                    System.err.println("ERROR: Failed to write names to file: " + e.getMessage());
                 }
 
                 // done
