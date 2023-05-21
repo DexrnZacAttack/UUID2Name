@@ -1,25 +1,19 @@
 package me.dexrn.uuid2name;
 
 import java.awt.BorderLayout;
-import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URL;
-import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.*;
 import java.util.ArrayList;
-import java.util.*;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -28,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+
 import org.apache.commons.io.IOUtils;
 
 import com.google.gson.Gson;
@@ -50,7 +45,7 @@ public class UUID2Name extends JFrame implements ActionListener {
 
     public UUID2Name() {
         // create UI components
-        setTitle("UUID to Name Converter");
+        setTitle("UUID2Name");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         fileChooser = new JFileChooser();
@@ -92,6 +87,7 @@ public class UUID2Name extends JFrame implements ActionListener {
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
+        System.out.println("Project GitHub: https://github.com/DexrnZacAttack/UUID2Name");
     }
 
     int counter = 0;
